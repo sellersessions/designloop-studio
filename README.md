@@ -1,12 +1,25 @@
-# Video Prompt Studio
+# DesignLoop Studio
 
-Professional JSON prompt generator for VEO 3 and Sora 2 video generation models.
+Human-Designed Stories That Drive Conversion
+
+AI-powered video storyboard and prompt generator for VEO 3 and Sora 2 video generation models.
 
 ## Features
 
-- **Intelligent Prompt Generation**: Uses Claude AI to generate cinematographically-precise JSON prompts
-- **Model-Specific Optimization**: Tailored prompts for VEO 3 (4/6/8s) and Sora 2 (4/8/12s)
-- **Image Analysis**: Upload reference images for visual consistency
+### Phase 2A: Storyboard Workflow (Current)
+
+- **Three-Stage Workflow**:
+  1. **Storyboard Input**: Upload product reference image + creative direction
+  2. **Concept Selection**: AI generates 3 distinct storyboard concepts with detailed scene descriptions
+  3. **Video Generator**: Selected concept pre-fills JSON prompt generator
+
+- **AI-Powered Concept Generation**: Claude Haiku generates 3 unique storyboard concepts with:
+  - Catchy titles and mood/tone descriptions
+  - 6 detailed scene descriptions (action, camera work, mood)
+  - Model selector (Sonnet 4.5 for quality, Haiku 3.5 for speed/cost)
+
+- **Reference Image Analysis**: Claude Vision analyzes product images for visual consistency
+- **JSON Prompt Generation**: Cinematographically-precise JSON for VEO 3 and Sora 2
 - **Duration Validation**: Automatic validation of shot duration mathematics
 - **Beautiful UI**: Modern, responsive interface with dark mode
 
@@ -141,9 +154,57 @@ npm run lint
 
 ## API Endpoints
 
+### POST /api/analyze-reference
+
+Analyze uploaded reference image using Claude Vision.
+
+**Request Body**:
+```json
+{
+  "imageBase64": "string",
+  "imageMediaType": "string"
+}
+```
+
+**Response**: Text analysis of visual elements (lighting, composition, style, etc.)
+
+### POST /api/generate-concepts
+
+Generate 3 storyboard concepts from creative direction.
+
+**Request Body**:
+```json
+{
+  "creativeDirection": "string",
+  "imageAnalysis": "string | null",
+  "targetDuration": number
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "concepts": [
+    {
+      "id": number,
+      "title": "string",
+      "mood": "string",
+      "scenes": [
+        {
+          "title": "string",
+          "description": "string"
+        }
+      ],
+      "rawMarkdown": "string"
+    }
+  ]
+}
+```
+
 ### POST /api/generate-prompt
 
-Generate video prompt JSON.
+Generate video prompt JSON from selected concept.
 
 **Request Body**:
 ```json
@@ -154,19 +215,8 @@ Generate video prompt JSON.
   "aspectRatio": "16:9" | "9:16",
   "shotCount": "auto" | number,
   "imageAnalysis": "string | null",
-  "imageUrl": "string | null"
-}
-```
-
-### POST /api/analyze-image
-
-Analyze reference image for visual details.
-
-**Request Body**:
-```json
-{
-  "imageBase64": "string",
-  "imageMediaType": "string"
+  "imageUrl": "string | null",
+  "claudeModel": "sonnet" | "haiku"
 }
 ```
 
