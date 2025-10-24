@@ -43,6 +43,14 @@ export async function analyzeImageWithClaude(
   imageBase64: string,
   imageMediaType: string = 'image/jpeg'
 ): Promise<string> {
+  // Validate and cast media type to allowed values
+  const allowedMediaTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] as const;
+  type AllowedImageMediaType = typeof allowedMediaTypes[number];
+
+  if (!allowedMediaTypes.includes(imageMediaType as AllowedImageMediaType)) {
+    throw new Error(`Unsupported media type: ${imageMediaType}. Allowed types: ${allowedMediaTypes.join(', ')}`);
+  }
+
   try {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-5-20250929',
@@ -55,7 +63,7 @@ export async function analyzeImageWithClaude(
               type: 'image',
               source: {
                 type: 'base64',
-                media_type: imageMediaType,
+                media_type: imageMediaType as AllowedImageMediaType,
                 data: imageBase64,
               },
             },
