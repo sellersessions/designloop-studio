@@ -185,12 +185,13 @@ function parseConceptsFromMarkdown(markdown: string): Concept[] {
     for (let j = 0; j < lines.length; j++) {
       const line = lines[j].trim();
 
-      // Match scene header: "1. **Scene Title:**"
-      const sceneMatch = line.match(/^(\d+)\.\s*\*\*([^*]+)\*\*:(.*)$/);
+      // Match scene header: "1. **Scene Title:** Description"
+      // Pattern: number, dot, space(s), **, title (no * or :), :**, description
+      const sceneMatch = line.match(/^(\d+)\.\s+\*\*([^*:]+):\*\*\s*(.*)$/);
 
       if (sceneMatch) {
         const sceneTitle = sceneMatch[2].trim();
-        let sceneDescription = sceneMatch[3].trim(); // Start with text after colon
+        let sceneDescription = sceneMatch[3].trim(); // Start with text after :**
 
         // Collect following lines until we hit the next scene or end
         for (let k = j + 1; k < lines.length; k++) {
